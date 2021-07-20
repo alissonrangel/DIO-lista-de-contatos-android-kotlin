@@ -7,7 +7,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class ContactAdapter : RecyclerView.Adapter<ContactAdapter.ContactAdapterViewHolder>() {
+class ContactAdapter(var listener: ClickItemContactListener) :
+    RecyclerView.Adapter<ContactAdapter.ContactAdapterViewHolder>() {
 
     private val list: MutableList<Contact> = mutableListOf()
 
@@ -15,7 +16,7 @@ class ContactAdapter : RecyclerView.Adapter<ContactAdapter.ContactAdapterViewHol
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContactAdapterViewHolder {
         //inflar -> dizer quem é meu layout que vai ser resp por desenhar cada item da tela
         val view = LayoutInflater.from(parent.context).inflate(R.layout.contact_item, parent, false)
-        return ContactAdapterViewHolder(view)
+        return ContactAdapterViewHolder(view, list, listener)
     }
 
     override fun getItemCount(): Int = list.size
@@ -32,11 +33,18 @@ class ContactAdapter : RecyclerView.Adapter<ContactAdapter.ContactAdapterViewHol
         notifyDataSetChanged()
     }
 
-    class ContactAdapterViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
+    class ContactAdapterViewHolder(itemView: View, var list: List<Contact>, var listener: ClickItemContactListener) :
+        RecyclerView.ViewHolder(itemView){
 
         private val tvName: TextView = itemView.findViewById(R.id.tv_name)
         private val tvPhone: TextView = itemView.findViewById(R.id.tv_phone)
         private val tvPhotograph: ImageView = itemView.findViewById(R.id.iv_photo)
+
+        init {
+            itemView.setOnClickListener {
+                listener.clickItemContact(list[adapterPosition])
+            }
+        }
 
         fun bind(contact: Contact){
             tvName.text = contact.name
